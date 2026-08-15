@@ -40,12 +40,11 @@ function accountCheckboxes() {
   return [...document.querySelectorAll('input[name="account"]')];
 }
 
-function updateAllAccountsState() {
+function updateAccountSelectionState() {
   if (!allAccountsCheckbox) return;
-  const checkboxes = accountCheckboxes();
-  const checkedCount = checkboxes.filter(checkbox => checkbox.checked).length;
-  allAccountsCheckbox.checked = checkboxes.length > 0 && checkedCount === checkboxes.length;
-  allAccountsCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+  for (const checkbox of accountCheckboxes()) {
+    checkbox.disabled = allAccountsCheckbox.checked;
+  }
 }
 
 async function saveSettings() {
@@ -79,11 +78,6 @@ async function load() {
 
   accountsContainer.textContent = "";
   const usableAccounts = accounts.filter(account => !["nntp", "rss"].includes(account.type));
-  if (!usableAccounts.length) {
-    accountsContainer.textContent = message("noAccounts");
-    return;
-  }
-
   const allLabel = document.createElement("label");
   allAccountsCheckbox = document.createElement("input");
   const allText = document.createElement("span");
@@ -94,6 +88,12 @@ async function load() {
   allLabel.append(allAccountsCheckbox, " ", allText);
   accountsContainer.append(allLabel);
 
+  if (!usableAccounts.length) {
+    const noAccounts = document.createElement("span");
+    noAccounts.textContent = message("noAccounts");
+    accountsContainer.append(noAccounts);
+  }
+
   for (const account of usableAccounts) {
     const label = document.createElement("label");
     const checkbox = document.createElement("input");
@@ -101,7 +101,7 @@ async function load() {
     checkbox.type = "checkbox";
     checkbox.name = "account";
     checkbox.value = account.id;
-    checkbox.checked = settings.selectAllAccounts || selected.has(account.id);
+    checkbox.checked = selected.has(account.id);
     type.className = "account-type";
     type.textContent = `(${account.type})`;
     label.append(checkbox, ` ${account.name} `, type);
@@ -110,13 +110,9 @@ async function load() {
 
 
   allAccountsCheckbox.addEventListener("change", () => {
-    for (const checkbox of accountCheckboxes()) checkbox.checked = allAccountsCheckbox.checked;
-    allAccountsCheckbox.indeterminate = false;
+    updateAccountSelectionState();
   });
-  for (const checkbox of accountCheckboxes()) {
-    checkbox.addEventListener("change", updateAllAccountsState);
-  }
-  updateAllAccountsState();
+  updateAccountSelectionState();
 
   if (stored.lastRun?.finishedAt) {
     setStatus(message("lastRunStatus", [
@@ -142,7 +138,7 @@ runButton.addEventListener("click", async () => {
   setStatus(message("archivingStatus"));
   try {
     const settings = await saveSettings();
-    if (!settings.selectedAccountIds.length) {
+    if (!settings.selectAllAccounts && !settings.selectedAccountIds.length) {
       throw new Error(message("selectAccountError"));
     }
     const result = await messenger.runtime.sendMessage({ type: "runArchive" });
