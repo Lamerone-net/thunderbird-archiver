@@ -21,9 +21,6 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "action": {
-    "default_title": "__MSG_actionTitle__"
-  },
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true

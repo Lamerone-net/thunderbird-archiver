@@ -6,7 +6,7 @@ Automatically archives old messages from selected Thunderbird accounts by using 
 
 - Archive messages older than 2 months, 6 months, 1 year, or a custom number of days.
 - Select one or more mail accounts.
-- Run automatically once per day or manually from the toolbar/preferences.
+- Run automatically once per day or manually from the preferences.
 - Optionally permanently delete old messages from Spam and Trash.
 - Automatically follow Thunderbird's interface language, with 69 locale catalogs.
 - Keep all data inside Thunderbird; the installed extension makes no network requests.

@@ -169,7 +169,6 @@ messenger.runtime.onStartup.addListener(ensureDailyAlarm);
 messenger.alarms.onAlarm.addListener(alarm => {
   if (alarm.name === ALARM_NAME) runArchive().catch(console.error);
 });
-messenger.action.onClicked.addListener(() => runArchive().catch(console.error));
 messenger.runtime.onMessage.addListener(message => {
   if (message?.type === "runArchive") return runArchive();
 });
