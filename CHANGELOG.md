@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1 - 2026-09-26
+
+- Added the extension logo to the packaged manifest.
+
 ## 1.4.0 - 2026-07-31
 
 - Added a persistent “All accounts” option which also includes accounts added later.
